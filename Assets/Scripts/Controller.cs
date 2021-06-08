@@ -273,29 +273,104 @@ public class Controller : MonoBehaviour
 
     public void FindSelectableTiles(bool cop)
     {
-                 
-        int indexcurrentTile;        
 
-        if (cop==true)
+        int indexcurrentTile;
+
+        if (cop == true)
+        {
             indexcurrentTile = cops[clickedCop].GetComponent<CopMove>().currentTile;
+        }
         else
+        {
             indexcurrentTile = robber.GetComponent<RobberMove>().currentTile;
+        }
+
 
         //La ponemos rosa porque acabamos de hacer un reset
         tiles[indexcurrentTile].current = true;
+
+        List<int> gentes = new List<int>();
+        for (int i = 0; i < cops.Length; i++)
+        {
+            gentes.Add(cops[i].GetComponent<CopMove>().currentTile);
+        }
 
         //Cola para el BFS
         Queue<Tile> nodes = new Queue<Tile>();
 
         //TODO: Implementar BFS. Los nodos seleccionables los ponemos como selectable=true
         //Tendrás que cambiar este código por el BFS
-        for(int i = 0; i < Constants.NumTiles; i++)
+        for (int i = 0; i < Constants.NumTiles; i++)
         {
-            tiles[i].selectable = true;
+            tiles[i].selectable = false;
+            tiles[i].visited = false;
         }
 
+        Tile tileActual = tiles[indexcurrentTile];
+        tileActual.visited = true;
 
+
+        for (int i = 0; i < tileActual.adjacency.Count; i++)
+        {
+            if (tileActual.adjacency[i] >= 0)
+            {
+                tiles[tileActual.adjacency[i]].parent = tileActual;
+                nodes.Enqueue(tiles[tileActual.adjacency[i]]);
+
+
+            }
+        }
+
+        while (nodes.Count > 0)
+        {
+
+            Tile aux = nodes.Dequeue();
+
+            if (!aux.visited)
+            {
+                if (gentes.Contains(aux.numTile))
+                {
+                    aux.visited = true;
+                    aux.distance = aux.parent.distance + 1;
+                }
+                else
+                {
+                    aux.visited = true;
+                    aux.distance = aux.parent.distance + 1;
+
+                    for (int i = 0; i < aux.adjacency.Count; i++)
+                    {
+                        if (aux.adjacency[i] >= 0)
+                        {
+
+                            if (!tiles[aux.adjacency[i]].visited)
+                            {
+                                tiles[aux.adjacency[i]].parent = aux;
+                                nodes.Enqueue(tiles[aux.adjacency[i]]);
+
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        foreach (Tile t in tiles)
+        {
+            if (t.distance <= 2)
+            {
+                if (!gentes.Contains(t.numTile))
+                {
+                    t.selectable = true;
+                }
+
+            }
+        }
     }
+
+
+}
     
    
     
@@ -305,4 +380,4 @@ public class Controller : MonoBehaviour
    
 
        
-}
+
