@@ -51,11 +51,96 @@ public class Controller : MonoBehaviour
         //Matriz de adyacencia
         int[,] matriu = new int[Constants.NumTiles, Constants.NumTiles];
 
-        //TODO: Inicializar matriz a 0's
+        //Inicializar matriz a 0's
+        for (int i = 0; i < Constants.NumTiles; i++)
+        {
+            for (int j = 0; j < Constants.NumTiles; j++)
+            {
+                matriu[i, j] = 0;
+            }
+        }
 
-        //TODO: Para cada posición, rellenar con 1's las casillas adyacentes (arriba, abajo, izquierda y derecha)
+        //Para cada posición, rellenar con 1's las casillas adyacentes (arriba, abajo, izquierda y derecha)
+        for (int i = 0; i < Constants.NumTiles; i++)
+        {
+            for (int j = 0; j < Constants.NumTiles; j++)
+            {
+                if (i % 8 != 0)
+                {
+                    if (i - 1 >= 0)
+                    {
+                        matriu[i - 1, j] = 1;
+                    }
+                }
+                if (i - 8 >= 0)
+                {
+                    matriu[i - 8, j] = 1;
+                }
+                if ((i + 1) % 8 != 0)
+                {
+                    if (i + 1 <= 63)
+                    {
+                        matriu[i + 1, j] = 1;
+                    }
+                }
+                if (i + 8 <= 63)
+                {
+                    matriu[i + 8, j] = 1;
+                }
 
-        //TODO: Rellenar la lista "adjacency" de cada casilla con los índices de sus casillas adyacentes
+            }
+        }
+
+        //Rellenar la lista "adjacency" de cada casilla con los índices de sus casillas adyacentes
+        for (int i = 0; i < Constants.NumTiles; i++)
+        {
+            if (i % 8 != 0)
+            {
+                if (i - 1 >= 0)
+                {
+                    //izquierda
+                    tiles[i].adjacency.Add(tiles[i - 1].numTile);
+                }
+                else
+                {
+                    tiles[i].adjacency.Add(-1);
+                }
+            }
+
+            if (i - 8 >= 0)
+            {
+                //abajo
+                tiles[i].adjacency.Add(tiles[i - 8].numTile);
+            }
+            else
+            {
+                tiles[i].adjacency.Add(-1);
+            }
+
+            if ((i + 1) % 8 != 0)
+            {
+                if (i + 1 <= 63)
+                {
+                    //derecha
+                    tiles[i].adjacency.Add(tiles[i + 1].numTile);
+                }
+                else
+                {
+                    tiles[i].adjacency.Add(-1);
+                }
+            }
+
+            if (i + 8 <= 63)
+            {
+                //abajo
+                tiles[i].adjacency.Add(tiles[i + 8].numTile);
+            }
+            else
+            {
+                tiles[i].adjacency.Add(-1);
+            }
+
+        }
 
     }
 
