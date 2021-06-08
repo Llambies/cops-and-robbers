@@ -221,6 +221,7 @@ public class Controller : MonoBehaviour
 
     public void RobberTurn()
     {
+
         clickedTile = robber.GetComponent<RobberMove>().currentTile;
         tiles[clickedTile].current = true;
         FindSelectableTiles(false);
@@ -230,7 +231,113 @@ public class Controller : MonoBehaviour
         - Movemos al caco a esa casilla
         - Actualizamos la variable currentTile del caco a la nueva casilla
         */
-        robber.GetComponent<RobberMove>().MoveToTile(tiles[robber.GetComponent<RobberMove>().currentTile]);
+
+        /*
+        int destino = Random.Range(0, 63);
+
+        bool valorNoValido = true;
+        while(valorNoValido)
+        {
+            if (tiles[destino].selectable)
+            {
+                valorNoValido = false;
+            }
+            else
+            {
+                destino = Random.Range(0, 63);
+            }
+        }
+
+        clickedTile = destino;
+
+        robber.GetComponent<RobberMove>().MoveToTile(tiles[destino]);
+        robber.GetComponent<RobberMove>().currentTile = destino;
+        */
+
+        int mayorDistancia = 0;
+        int mayorDistanciaCop0 = 0;
+        int mayorDistanciaCop1 = 0;
+        int posMayor = 0;
+
+        List<int> casillasAdyacentes = new List<int>();
+
+
+        foreach (Tile t in tiles)
+        {
+            if (t.selectable)
+            {
+                casillasAdyacentes.Add(t.numTile);
+            }
+        }
+
+        ResetTiles();
+
+        List<int> distanciasCop0 = new List<int>();
+
+        clickedCop = 0;
+        FindSelectableTiles(true);
+
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (casillasAdyacentes.Contains(tiles[i].numTile))
+            {
+                distanciasCop0.Add(tiles[i].distance);
+            }
+        }
+
+        ResetTiles();
+
+        List<int> distanciasCop1 = new List<int>();
+
+        clickedCop = 1;
+        FindSelectableTiles(true);
+
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (casillasAdyacentes.Contains(tiles[i].numTile))
+            {
+                distanciasCop1.Add(tiles[i].distance);
+            }
+        }
+
+        ResetTiles();
+
+        for (int i = 0; i < casillasAdyacentes.Count; i++)
+        {
+            if (mayorDistancia < (distanciasCop0[i] + distanciasCop1[i]))
+            {
+                mayorDistancia = (distanciasCop0[i] + distanciasCop1[i]);
+                mayorDistanciaCop0 = distanciasCop0[i];
+                mayorDistanciaCop1 = distanciasCop1[i];
+                posMayor = i;
+            }
+            else if (mayorDistancia == (distanciasCop0[i] + distanciasCop1[i]))
+            {
+                if (distanciasCop0[i] < distanciasCop1[i])
+                {
+                    if (mayorDistanciaCop0 < distanciasCop0[i])
+                    {
+                        mayorDistanciaCop0 = distanciasCop0[i];
+                        mayorDistanciaCop1 = distanciasCop1[i];
+                        posMayor = i;
+                    }
+                }
+                else if (distanciasCop0[i] > distanciasCop1[i])
+                {
+                    if (mayorDistanciaCop1 < distanciasCop1[i])
+                    {
+                        mayorDistanciaCop0 = distanciasCop0[i];
+                        mayorDistanciaCop1 = distanciasCop1[i];
+                        posMayor = i;
+                    }
+                }
+            }
+        }
+
+
+        FindSelectableTiles(false);
+        robber.GetComponent<RobberMove>().MoveToTile(tiles[casillasAdyacentes[posMayor]]);
+        robber.GetComponent<RobberMove>().currentTile = casillasAdyacentes[posMayor];
     }
 
     public void EndGame(bool end)
